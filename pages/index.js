@@ -1,21 +1,34 @@
 import Head from "next/head";
 import Image from "next/image";
 import styles from "@/styles/Home.module.css";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function Home() {
+    const [productInfo, setProductInfo] = useState("");
     useEffect(() => {
-        const getData = async () => {
-            const res = await fetch("http://localhost:3000/api/products");
-            const data = await res.json();
-            console.log(data, "____________________________________________");
-        };
-        getData();
+        fetch("http://localhost:3000/api/products")
+            .then((response) => response.json())
+            .then((data) => setProductInfo(data));
     }, []);
+
+    const categoriesProduct = productInfo && [
+        ...new Set(productInfo.map((info) => info.category)),
+    ];
+
     return (
         <div className="p-5">
             <div>
-                <h2 className="font-bold text-2xl">Biltong</h2>
+                {categoriesProduct &&
+                    categoriesProduct.map((cat) => {
+                        return (
+                            <div key={cat}>
+                                <h2 className="font-bold text-2xl capitalize">
+                                    {cat}
+                                </h2>
+                            </div>
+                        );
+                    })}
+
                 <div className="py-4">
                     <div className="w-64">
                         <div className="bg-orange-50 p-5 rounded-lg">
