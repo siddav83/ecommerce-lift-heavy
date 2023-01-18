@@ -1,65 +1,78 @@
 import Head from "next/head";
-import Image from "next/image";
+
 import styles from "@/styles/Home.module.css";
 import { useEffect, useState } from "react";
+import Product from "@/components/Product";
+import { connectDatabase } from "@/lib/mongoose";
+import { findAllProducts } from "./api/products";
+import Footer from "@/components/Footer";
+import Layout from "@/components/Layout";
 
-export default function Home() {
-    const [productInfo, setProductInfo] = useState("");
-    useEffect(() => {
-        fetch("http://localhost:3000/api/products")
-            .then((response) => response.json())
-            .then((data) => setProductInfo(data));
-    }, []);
+export default function Home({ products }) {
+    // console.log(products);
+    const [searchTerm, setSearchTerm] = useState("");
 
-    const categoriesProduct = productInfo && [
-        ...new Set(productInfo.map((info) => info.category)),
+    const categoriesProduct = products && [
+        ...new Set(products.map((info) => info.category)),
     ];
 
+    if (searchTerm) {
+        products = products.filter((search) =>
+            search.name.toLowerCase().includes(searchTerm)
+        );
+    }
+
     return (
-        <div className="p-5">
+        <Layout>
+            <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search for products..."
+                className="bg-gray-100 w-full px-3 py-3 rounded-xl"
+            />
             <div>
                 {categoriesProduct &&
                     categoriesProduct.map((cat) => {
                         return (
                             <div key={cat}>
-                                <h2 className="font-bold text-2xl capitalize">
-                                    {cat}
-                                </h2>
+                                {products.find((p) => p.category === cat) && (
+                                    <div>
+                                        <h2 className="font-bold text-2xl py-5 capitalize">
+                                            {cat}
+                                        </h2>
+                                        <div className="flex -mx-5 overflow-x-scroll snap-x scrollbar-hide">
+                                            {products
+                                                .filter(
+                                                    (p) => p.category === cat
+                                                )
+                                                .map((product) => (
+                                                    <div
+                                                        key={product._id}
+                                                        className="px-5 snap-start"
+                                                    >
+                                                        <Product
+                                                            products={product}
+                                                        />
+                                                    </div>
+                                                ))}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         );
                     })}
-
-                <div className="py-4">
-                    <div className="w-64">
-                        <div className="bg-orange-50 p-5 rounded-lg">
-                            <Image
-                                src="/products/grass-fed-biltong.jpg"
-                                width={220}
-                                height={180}
-                                alt="yellow fat silverside biltong"
-                            />
-                        </div>
-                        <div className="mt-2">
-                            <h3 className="font-bold text-lg">
-                                Sliced Biltong
-                            </h3>
-                            <p className="text-sm mt-2 leading-4">
-                                Delicious Yellow Fat Biltong with flavour like
-                                no other! It doesn’t get better than this. This
-                                product is subject to availability.
-                            </p>
-                            <div className="flex">
-                                <div className="self-center text-3xl font-bold grow">
-                                    £8.99
-                                </div>
-                                <button className="bg-amber-200 text-white font-bold py-2 px-4 mt-2 rounded-xl">
-                                    +
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
-        </div>
+        </Layout>
     );
 }
+
+export const getServerSideProps = async () => {
+    await connectDatabase();
+    const products = await findAllProducts();
+    return {
+        props: {
+            products: JSON.parse(JSON.stringify(products)),
+        },
+    };
+};
