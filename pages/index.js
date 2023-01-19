@@ -9,7 +9,6 @@ import Footer from "@/components/Footer";
 import Layout from "@/components/Layout";
 
 export default function Home({ products }) {
-    // console.log(products);
     const [searchTerm, setSearchTerm] = useState("");
 
     const categoriesProduct = products && [

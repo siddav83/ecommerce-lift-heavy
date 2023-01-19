@@ -14,6 +14,7 @@
     "next": "13.1.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-localstorage-hook": "^0.1.0",
     "tailwind-scrollbar-hide": "^1.1.7"
   },
   "devDependencies": {
