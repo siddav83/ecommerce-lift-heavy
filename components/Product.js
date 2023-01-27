@@ -24,7 +24,9 @@ const Product = ({ products }) => {
 
             <div className="mt-2">
                 <h3 className="font-bold text-lg">{name}</h3>
-                <p className="text-sm mt-2 leading-4">{description}</p>
+                <p className="text-sm mt-2 leading-4 text-gray-600">
+                    {description}
+                </p>
                 <div className="flex">
                     <div className="self-center text-3xl font-bold grow">
                         £{price}

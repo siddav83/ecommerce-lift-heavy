@@ -40,7 +40,7 @@ export default function Home({ products }) {
                                         <h2 className="font-bold text-2xl py-5 capitalize">
                                             {cat}
                                         </h2>
-                                        <div className="flex -mx-5 overflow-x-scroll snap-x scrollbar-hide">
+                                        <div className="flex -mx-5 overflow-x-scroll snap-x scrollbar-hide justify-center">
                                             {products
                                                 .filter(
                                                     (p) => p.category === cat

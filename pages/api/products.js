@@ -1,13 +1,22 @@
 import { connectDatabase } from "@/lib/mongoose";
-import Product from "@/models/Product";
+import Product from "../../models/Product";
 
-export const findAllProducts = async () => {
-    return await Product.find().exec();
-};
+export async function findAllProducts() {
+    return Product.find().exec();
+}
 
-const handle = async (req, res) => {
+export default async function handle(req, res) {
     await connectDatabase();
-    res.json(findAllProducts);
-};
+    const { ids } = req.query;
 
-export default handle;
+    if (ids) {
+        const idsArray = ids.split(",");
+        res.json(
+            await Product.find({
+                _id: { $in: idsArray },
+            }).exec()
+        );
+    } else {
+        res.json(await findAllProducts());
+    }
+}
